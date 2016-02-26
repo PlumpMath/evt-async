@@ -11,7 +11,10 @@
 (def batches-url     (str (URL. EVT-API "batches")))
 
 (defn products-tagged [tag]
-  (str products-url "?filter=tags=" tag))
+  (str products-url "?filter=tags=" tag "&perPage=" 10))
 
 (defn thngs-tagged [tag]
   (str thngs-url "?filter=tags=" tag))
+
+(defn product [id]
+  (str products-url "/" id))

@@ -6,3 +6,8 @@
   (testing "thngs tagged"
     (is (= "https://api.evrythng.com/thngs?filter=tags=TMP"
            (thngs-tagged "TMP")))))
+
+(deftest products-tagged-test
+  (testing "products tagged"
+    (is (= "https://api.evrythng.com/products?filter=tags=TMP"
+           (products-tagged "TMP")))))
