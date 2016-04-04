@@ -13,10 +13,12 @@
   (merge req {:accept :json
               :as :json}))
 
-(defn evt-headers [key]
-  (->
-    (json-header {})
-    (auth-header key)))
+(defn evt-headers 
+  ([key] (evt-headers key {}))
+  ([key defaults]
+    (->
+      (json-header defaults)
+      (auth-header key))))
 
 (defn get-json [key url]
   "GET the given url as JSON, returns a map."
@@ -24,7 +26,7 @@
 
 (defn delete [key url]
   "Send HTTP DELETE to given URL with given key"
-  (h/delete url (evt-headers key)))
+  (h/delete url (evt-headers key {:throw-exceptions false})))
 
 (defn body [res]
   "The body of an HTTP response as a map"
