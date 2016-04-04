@@ -25,3 +25,8 @@
   ([tag] (tagged default-filter tag))
   ([f tag] (let [tags (get-in f [:tags] [])]
     (assoc f :tags (conj tags tag)))))
+
+(defn in-project
+  "Modify filter to return only thngs in a Project"
+  ([project-id] (in-project default-filter project-id))
+  ([f project-id] (assoc f :project project-id)))

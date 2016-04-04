@@ -8,6 +8,11 @@
     (is (= {:page 2}
            (f/page {} 2)))))
 
+(deftest filter-in-project-test
+  (testing "In Project"
+    (is (= {:project "XYZ"}
+           (f/in-project {} "XYZ")))))
+
 (deftest filter-tag-test
   (testing "First tag"
     (is (= {:tags [:a]}
