@@ -22,6 +22,10 @@
   "GET the given url as JSON, returns a map."
     (h/get url (evt-headers key)))
 
+(defn put-json [key url body]
+  "Put the body to the given URL"
+  (h/put url (evt-headers key) body))
+
 (defn delete [key url]
   "Send HTTP DELETE to given URL with given key"
   (h/delete url (evt-headers key)))

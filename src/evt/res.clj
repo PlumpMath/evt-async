@@ -1,5 +1,6 @@
 (ns evt.res
-  (:import [java.net URL]))
+  (:import [java.net URL])
+  (:require [evt.filters :as f]))
 
 ; Resource URLs for evrythng.com
 
@@ -18,3 +19,7 @@
 
 (defn product [id]
   (str products-url "/" id))
+
+(defn products-filter [id f]
+	"All products that are returned by filter"
+	(str products-url "?" (f/params f)))

@@ -1,12 +1,16 @@
 (ns evt.filters-test
-  (:use [evt.filters :as f])
+  (:require [evt.filters :as f])
   (:require [clojure.test :refer :all]))
 
 
 (deftest filter-pagination-test
   (testing "Pagination"
     (is (= {:page 2}
-           (f/page {} 2)))))
+           (f/page {} 2)))
+        (is (= {:page 2}
+           (f/next-page {} )))
+        (is (= {:page 3}
+           (f/next-page {:page 2} )))))
 
 (deftest filter-in-project-test
   (testing "In Project"
@@ -23,4 +27,14 @@
   (testing "Tag"
     (is (= {:tags [:c]}
            (f/tagged {} :c)))))
+
+(deftest filters-test
+  (testing "Combined filters"
+    (let [expected "perPage=30&project=UDnkqspYQfdN6DhgXBkMhmkh&filter=tags=Cork"]
+      (is 
+        (= expected 
+          (-> 
+            (f/tagged "Cork") 
+            (f/in-project "UDnkqspYQfdN6DhgXBkMhmkh") 
+            (f/params)))))))
 

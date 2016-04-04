@@ -7,6 +7,57 @@ An experiment to see if using channels results in more readable code than callba
 
 # Examples
 
+## Find all tagged products with word in description
+
+Use a filter to get all Products tagged _Glass_, then use a
+transducer to get only those with _GREEN_ in the description
+
+```clojure
+(use 'evt.api)
+(use 'evt.res)
+(require '[evt.query :as q])
+
+(-> 
+   (evt.api/query 
+      evt.api/EVRYTHNG_API_KEY 
+      (evt.res/products-tagged "Glass")
+      (q/description-contains "GREEN"))
+   (evt.api/echo))
+```
+
+```clojure
+(use 'evt.api)
+(use 'evt.res)
+(require '[evt.filters :as f])
+(require '[evt.query :as q])
+
+(-> 
+   (evt.api/query 
+      evt.api/EVRYTHNG_API_KEY 
+      evt.res/products-url
+      (f/tagged "Glass")
+      (q/description-contains "GREEN"))
+   (evt.api/echo))
+```
+
+
+```clojure
+(use 'evt.api)
+(use 'evt.res)
+(require '[evt.filters :as f])
+(require '[evt.query :as q])
+
+(-> 
+   (evt.api/query 
+      evt.api/EVRYTHNG_API_KEY 
+      evt.res/products-url
+      (f/in-project (f/tagged "Cork") "UDnkqspYQfdN6DhgXBkMhmkh")
+      (q/description-contains ""))
+   (evt.api/echo))
+```
+
+
+
 ## Delete all tagged products
 
 ```clojure

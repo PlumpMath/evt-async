@@ -1,4 +1,5 @@
 (ns evt.api
+  (:require [evt.filters :as fltr])
   (:use [evt.net]
         [clojure.core.async :only [go-loop >! <! close! chan timeout]]))
 
@@ -43,11 +44,35 @@
            (recur (inc page)))))
      ch)))
 
+
+(defn query [key url f1 q]
+  "Paginate over all records returned by URL and filter f, 
+   applying transducer q before thngs are added
+   to the channel"
+   (let [ch (chan 300 q)]
+    (go-loop [f f1]
+      (let [url (fltr/url-params url f)
+            response (get-json key url)
+            body     (body response)
+            n (get-in response [:headers "x-result-count"] "0")]
+        (println (format "%s returned %s records" url n))
+        (doseq [thng body]
+           (>! ch thng))
+        (if (zero? (count body))
+           (close! ch)
+           (recur (fltr/next-page f)))))
+    ch))
+
+
 (defn echo [ch]
+  "Echo description of every thng in the channel"
   (go-loop []
     (if-let [row (<! ch)]
       (do
-        (println (:tags row))
+        (println (str [(:id row) 
+                       (:name row) 
+                       (:description row) 
+                       (:tags row)]))
         (recur))
       (println "Finished."))))
 
