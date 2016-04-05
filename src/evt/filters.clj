@@ -20,6 +20,10 @@
   ([f n] {:pre [(pos? n)]}
    (assoc f :page n)))
 
+(defn per-page [f n]
+  {:pre [(pos? n) (<= n max-per-page)]}
+  (assoc f :perPage n))
+
 (defn next-page [f]
   "Modify filter to return next page"
   (let [p (get f :page 1)]
