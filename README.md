@@ -40,7 +40,6 @@ transducer to get only those with _GREEN_ in the description
    (evt.api/echo))
 ```
 
-
 ```clojure
 (use 'evt.api)
 (use 'evt.res)
@@ -54,6 +53,30 @@ transducer to get only those with _GREEN_ in the description
       (f/in-project (f/tagged "Cork") "UDnkqspYQfdN6DhgXBkMhmkh")
       (q/description-contains ""))
    (evt.api/echo))
+```
+
+
+```clojure
+(use 'evt.api)
+(use 'evt.res)
+(require '[evt.filters :as f])
+(require '[evt.query :as q])
+(require '[evt.net :as n])
+
+
+(defn set-photo [photo-url thng]
+  (let [id (:id thng)
+        url (evt.res/product id)
+        body {:photos [photo-url]}]
+        (n/put-json evt.api/EVRYTHNG_API_KEY url body)))
+
+(-> 
+   (evt.api/query 
+      evt.api/EVRYTHNG_API_KEY 
+      evt.res/products-url
+      (f/in-project (f/tagged "Cork") "UDnkqspYQfdN6DhgXBkMhmkh")
+      (q/description-contains ""))
+   (evt.api/for-each (partial set-photo CORK)))
 ```
 
 

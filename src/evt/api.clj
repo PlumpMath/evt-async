@@ -86,3 +86,13 @@
         (<! (timeout 125))
         (recur))
       (println "Finished."))))
+
+
+(defn for-each [ch f]
+  "Apply function to every thng in the channel"
+  (go-loop []
+    (if-let [row (<! ch)]
+      (do
+        (f row)
+        (recur))
+      (println "Finished."))))

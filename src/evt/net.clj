@@ -1,6 +1,7 @@
 (ns evt.net
   (:require [clj-http.client :as h])
-  (:use [cheshire.core :only [generate-string]]))
+  (:use 
+    [cheshire.core :only [generate-string]]))
 
 ;#? (:clj
 
@@ -8,10 +9,16 @@
   "Header to send API key"
   (assoc-in req [:headers "Authorization" ] key ))
 
+(defn content-type-json [req]
+  (assoc req :content-type :json ))
+
 (defn json-header [req]
   "Headers to request JSON"
   (merge req {:accept :json
               :as :json}))
+
+(defn json-body [req body]
+  (assoc req :body (h/json-encode body)))
 
 (defn evt-headers [key]
   (->
@@ -23,8 +30,13 @@
     (h/get url (evt-headers key)))
 
 (defn put-json [key url body]
-  "Put the body to the given URL"
-  (h/put url (evt-headers key) body))
+  "Put the body as JSON to the given URL"
+  (h/put url
+    {:body (h/json-encode body)
+    :headers {"Authorization" key}
+    :content-type :json
+    :accept :json
+    :as :json}))
 
 (defn delete [key url]
   "Send HTTP DELETE to given URL with given key"
