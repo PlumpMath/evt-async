@@ -2,6 +2,9 @@
   (:require [clojure.test :refer :all]
             [evt.api :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (=  1))))
+
+(deftest with-account-test
+  (testing "We can pass a key to an account"
+    (let [mock-action (fn [key url ] (.toUpperCase key))
+          evt (with-account "OurKEy")]
+      (is (= "OURKEY" (evt mock-action :any))))))

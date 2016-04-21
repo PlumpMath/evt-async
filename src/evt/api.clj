@@ -1,9 +1,37 @@
 (ns evt.api
+  (:require [evt.res :as r])
   (:use [evt.net]
-        [clojure.core.async :only [go-loop >! <! close! chan timeout]]))
+        [clojure.core.async :only [go-loop >! <! close! chan timeout]])
+  (:import (java.net URL)))
 
-(def EVRYTHNG_API_KEY (System/getenv "EVRYTHNG_API_KEY"))
- 
+(def EVRYTHNG_API_KEY "EVRYTHNG_API_KEY")
+(def EVRYTHNG_API_URL "EVRYTHNG_API_URL")
+
+(def EVT-API "https://api.evrythng.com")
+
+(defn with-account
+  "Returns an function 'evt' that interacts with the EVT account specified
+   by the given key (and optionally a different API URL). The evt function
+   takes an action function (paginate or drain), a resource, and an optional filter.
+   EVT returns a channel containing the results of running the action."
+  ([key] (with-account key EVT-API))
+  ([key base-url]
+    (let [api-base-url (URL. base-url)]
+      (fn [action resource]
+        (let [url (r/resource-url api-base-url resource)]
+          (action key url))))))
+
+
+(defn with-default-account []
+  "Return a function that connects with your default EVT account.
+   Your system MUST have an environment variable EVRYTHNG_API_KEY,
+   and MAY have an have an environment variable EVRYTHNG_API_URL which
+   overrides the default API location."
+  (with-account
+    (System/getenv EVRYTHNG_API_KEY)
+    (or (System/getenv EVRYTHNG_API_URL) EVT-API)))
+
+
 (defn next-url [response]
   "Return the URL of the next page of the result set,
    or nil."
@@ -52,7 +80,7 @@
   (go-loop []
     (if-let [row (<! ch)]
       (do
-        (println (:tags row))
+        (println (str [(:id row) (:name row) (:description row) (:tags row)]))
         (recur))
       (println "Finished."))))
 

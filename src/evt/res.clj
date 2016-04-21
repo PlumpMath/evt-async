@@ -1,7 +1,17 @@
 (ns evt.res
   (:import [java.net URL]))
 
-; Resource URLs for evrythng.com
+; Resource URLs for evrythng.com RESTful API
+
+(def resource-paths {:thngs "thngs"
+                     :products "products"})
+
+(defn resource-url [^URL base-url resource]
+  (->>
+    (get resource-paths resource (str resource) )
+    (URL. base-url)
+    (str)))
+
 
 (def EVT-API (URL. "https://api.evrythng.com"))
 
@@ -45,6 +55,10 @@
 
 (defn actions-of [at]
 	(str actions-url "/" at))
+
+(defn actions-of-tagged [at tag]
+  (str actions-url "/" at "?perPage=100" "&filter=tags=" tag))
+
 
 (defn action [at id]
 	(clojure.string/join "/" [actions-url at id]))
