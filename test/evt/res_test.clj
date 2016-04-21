@@ -10,7 +10,7 @@
 
 (deftest products-tagged-test
   (testing "products tagged"
-    (is (= "https://api.evrythng.com/products?filter=tags=TMP"
+    (is (= "https://api.evrythng.com/products?filter=tags=TMP&perPage=10"
            (products-tagged "TMP")))))
 
 (deftest resource-url-test

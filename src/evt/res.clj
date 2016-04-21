@@ -1,7 +1,8 @@
 (ns evt.res
-  (:import [java.net URL]))
+  (:import [java.net URL])
+  (:require [evt.filters :as f]))
 
-; Resource URLs for evrythng.com RESTful API
+; Resource URLs for evrythng.com
 
 (def resource-paths {:thngs "thngs"
                      :products "products"})
@@ -62,3 +63,7 @@
 
 (defn action [at id]
 	(clojure.string/join "/" [actions-url at id]))
+
+(defn products-filter [id f]
+	"All products that are returned by filter"
+	(str products-url "?" (f/params f)))
