@@ -16,6 +16,37 @@ The high-level structure of programs that use this library would be:
 
 # Examples
 
+## Echo the IDs of all Thngs
+
+Show the IDs of all the Thngs in the account. We can use paginate as we are not using filters (see gotchas)
+
+```clojure
+(use 'evt.api)
+(require '[evt.print :as p])
+
+(let [evt (with-default-account)] 
+  (-> 
+    (evt paginate :thngs)
+    (for-each p/echo-id)))
+```
+
+
+# Gotchas
+
+The EVT API provide two mechanisms for working with large result sets:
+
+* pagination (`perPage` and `page` URL parameters)
+* [HTTP Link headers](https://www.w3.org/wiki/LinkHeader)
+
+Be warned that if apply a filter to a query, and then follow the link to the next page of results,
+then the filter is stripped from the second page. Therefore you will end up retrieving or deleting
+thngs that you did not intend to delete.
+
+
+
+
+# OLD
+
 ## Find all tagged products with word in description
 
 Use a filter to get all Products tagged _Glass_, then use a
@@ -98,16 +129,4 @@ transducer to get only those with _GREEN_ in the description
       (evt.res/products-tagged "_TMP"))
     (evt.api/delete-all evt.res/product))
 ```
-l
 
-
-# Gotchas
-
-The EVT API provide two mechanisms for working with large result sets:
-
-* pagination (`perPage` and `page` URL parameters)
-* [HTTP Link headers](https://www.w3.org/wiki/LinkHeader)
-
-Be warned that if apply a filter to a query, and then follow the link to the next page of results,
-then the filter is stripped from the second page. Therefore you will end up retrieving or deleting
-thngs that you did not intend to delete.

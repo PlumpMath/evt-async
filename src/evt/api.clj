@@ -5,6 +5,8 @@
         [clojure.core.async :only [go-loop >! <! close! chan timeout]])
   (:import (java.net URL)))
 
+; Accounts
+
 (def EVRYTHNG_API_KEY "EVRYTHNG_API_KEY")
 (def EVRYTHNG_API_URL "EVRYTHNG_API_URL")
 
@@ -33,6 +35,16 @@
     (or (System/getenv EVRYTHNG_API_URL) EVT-API)))
 
 
+; Channels
+
+(defn eager-chan
+  "Make a channel with the capacity to read ahead.
+   The EVT API allows 100 records to be read at a time"
+  ([]       (chan (* 10 100)))
+  ([tducer] (chan (* 10 100 tducer))))
+
+; Pagination
+
 (defn next-url [response]
   "Return the URL of the next page of the result set,
    or nil."
@@ -42,7 +54,7 @@
   "Resource at given url is expected to return a list
    of results, and a link to the next page of results.
    Each record is written to the given channel."
-  ([key first-page-url] (paginate key first-page-url (chan 1000)))
+  ([key first-page-url] (paginate key first-page-url (eager-chan)))
   ([key first-page-url ch]
    (do
      (go-loop [url first-page-url]
@@ -57,9 +69,11 @@
           (close! ch))))
      ch)))
 
+; Cursor
+
 (defn drain
   "Keep retrieving same URL, until zero results found"
-  ([key url] (drain key url (chan 10000)))
+  ([key url] (drain key url (eager-chan)))
   ([key url ch]
    (do
      (go-loop [page 1]
@@ -82,7 +96,7 @@
   "Paginate over all records returned by URL and filter f, 
    applying transducer q before thngs are added
    to the channel"
-   (let [ch (chan 300 q)]
+   (let [ch (eager-chan q)]
     (go-loop [f f1]
       (let [url (fltr/url-params url f)
             response (get-json key url)
@@ -97,49 +111,15 @@
     ch))
 
 
-(defn echo [ch]
-  "Echo description of every thng in the channel"
-  (go-loop []
-    (if-let [row (<! ch)]
-      (do
-        (println (:tags row))
-        (recur))
-      (println "Finished."))))
-
-(defn delete-all [ch res-url]
-  (go-loop []
-    (if-let [row (<! ch)]
-      (let [id (:id row)
-            url (res-url id)]
-        (let [result (evt.net/delete evt.api/EVRYTHNG_API_KEY url)]
-          (println (format "Deletion: %s Status: %d" id (:status result))))
-        (<! (timeout 999))
-        (println (str "Deleting: " url))
-        (evt.net/delete evt.api/EVRYTHNG_API_KEY url)
-        (<! (timeout 125))
-        (recur))
-      (println "Finished."))))
-
+; Workers
 
 (defn for-each [ch f]
-  "Apply function to every thng in the channel"
+  "Apply function to every thng in the channel.
+   Finishes when the channel is closed.
+   TODO stop if we get HTTP 503"
   (go-loop []
     (if-let [row (<! ch)]
       (do
         (f row)
         (recur))
       (println "Finished."))))
-
-
-(defn delete-all-actions [ch res-url]
-  (go-loop []
-    (if-let [row (<! ch)]
-      (let [id (:id row)
-            at  (:type row)
-            url (res-url at id)]
-        (let [result (evt.net/delete evt.api/EVRYTHNG_API_KEY url)]
-          (println (format "Deletion: %s %s Status: %d" at id (:status result))))
-        (<! (timeout 250))
-        (recur))
-      (println "Finished."))))
-
