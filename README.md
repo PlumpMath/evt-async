@@ -1,6 +1,6 @@
 # EVT API
 
-ClojureScript client API to the [Evrythng](https://evrythng.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_Things) platform using [core.async](https://github.com/clojure/core.async).
+Clojure client API to the [Evrythng](https://evrythng.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_Things) platform using [core.async](https://github.com/clojure/core.async).
 
 An experiment to see if using channels results in more readable code than callbacks and promises.
 
@@ -11,7 +11,6 @@ The high-level structure of programs that use this library would be:
 1. create a connection to an EVT account (determined by your Operator key)
 2. call functions that query EVT thngs and return results on a channel
 3. process the thngs on the channel 
-
 
 
 # Examples
@@ -28,6 +27,24 @@ Show the IDs of all the Thngs in the account. We can use paginate as we are not 
   (-> 
     (evt paginate :thngs)
     (for-each p/echo-id)))
+```
+
+The `paginate` function returns a channel, and the `for-each` function consumes a channel as it's first argument.
+
+## Tagged Products
+
+We cannot use pagination, as we are using a filter. 
+
+```clojure
+(use 'evt.api)
+(require '[evt.print :as p])
+(require '[evt.filters :as f])
+
+(let [evt (with-default-account)
+      fltr (f/tagged "Not Applicable"] 
+  (-> 
+    (evt drain :products)
+    (for-each p/echo-tags)))
 ```
 
 
@@ -120,7 +137,6 @@ transducer to get only those with _GREEN_ in the description
 ```
 
 
-
 ## Delete all tagged products
 
 ```clojure
@@ -129,4 +145,3 @@ transducer to get only those with _GREEN_ in the description
       (evt.res/products-tagged "_TMP"))
     (evt.api/delete-all evt.res/product))
 ```
-
