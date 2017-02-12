@@ -1,6 +1,6 @@
 (ns evrythng.json "JSON functions"
-  (:require #?(:clj [clojure.core.async :as a :refer [onto-chan go-loop <!! <!]])
-            #?(:cljs [cljs.core.async :as a :refer [onto-chan <!! <!]])
+  (:require #?(:clj [clojure.core.async :as a :refer [onto-chan go-loop <!]])
+            #?(:cljs [cljs.core.async :as a :refer [onto-chan <!]])
             #?(:clj [clojure.data.json :as json])
             #?(:cljs [goog.json]))
   #?(:cljs (:require-macros [cljs.core.async.macros :refer [go-loop]])))
@@ -19,7 +19,7 @@
      (go-loop []
       (if-let [msg (<! in)]
         (let [msgs (decode-json msg)]
-          (a/<!! (onto-chan out msgs false))
+          (<! (onto-chan out msgs false))
           (recur))
         (a/close! out)))
      out)))

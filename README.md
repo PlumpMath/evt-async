@@ -10,16 +10,48 @@ An experiment to see if using channels results in more readable code than callba
 Get a page of Thngs:
 
 ```
+
 (require '[clojure.core.async :as a :refer :all])
+(require 'evrythng.client)
 
 (let [key (System/getenv "EVT_OPERATOR_KEY")]
   (go
     (let [e (a/chan)
           c (evrythng.client/get key "https://api.evrythng.com/thngs?perPage=2" e)]
         (clojure.pprint/pprint
-          (a/alts! [c e (a/timeout 1000)])))))
+          (a/alts! [c e (a/timeout 4000)])))))
 ```
 
+Clojure response:
+
+```json
+{:status 200,
+ :headers {"Access-Control-Allow-Origin" "*",
+           "Access-Control-Expose-Headers" "Link, X-Result-Count, X-Calculation-Date",
+           "content-type" "application/json",
+           "date" "Sun, 12 Feb 2017 20:48:59 GMT",
+           "link" "<https%3A%2F%2Fapi.evrythng.com%2Fthngs%3FperPage%3D2%26sortOrder%3DDESCENDING%26nextPageToken%3DUkHRgPSEM3PEE6waaDQnaaXe>; rel=\"next\"",
+           "Content-Length" "308",
+           "Connection" "Close"},
+ :body "[{\"id\":\"U2HaX8yABXPRQKwawE7AeCcg\",\"createdAt\":1486908963938,\"customFields\":{},\"updatedAt\":1486908963938,\"name\":\"Cognac\",\"properties\":{},\"identifiers\":{}},{\"id\":\"UkHRgPSEM3PEE6waaDQnaaXe\",\"createdAt\":1486908951591,\"customFields\":{},\"updatedAt\":1486908951591,\"name\":\"Whiskey\",\"properties\":{},\"identifiers\":{}}]",
+ :request-time 607,
+ :trace-redirects ["https://api.evrythng.com/thngs?perPage=2"],
+ :orig-content-encoding nil,
+ :links {:next {:href "https%3A%2F%2Fapi.evrythng.com%2Fthngs%3FperPage%3D2%26sortOrder%3DDESCENDING%26nextPageToken%3DUkHRgPSEM3PEE6waaDQnaaXe"}}}
+```
+
+ClojureScript response:
+
+```json
+{:status 200,
+ :success true,
+ :body [{:id "U2HaX8yABXPRQKwawE7AeCcg", :createdAt 1486908963938, :customFields {}, :updatedAt 1486908963938, :name "Cognac", :properties {}, :identifiers {}} {:id "UkHRgPSEM3PEE6waaDQnaaXe", :createdAt 1486908951591, :customFields {}, :updatedAt 1486908951591, :name "Whiskey", :properties {}, :identifiers {}}],
+ :headers {"link" "<https%3A%2F%2Fapi.evrythng.com%2Fthngs%3FperPage%3D2%26sortOrder%3DDESCENDING%26nextPageToken%3DUkHRgPSEM3PEE6waaDQnaaXe>; rel=\"next\"",
+           "content-type" "application/json"},
+ :trace-redirects ["https://api.evrythng.com/thngs?perPage=2" "https://api.evrythng.com/thngs?perPage=2"],
+ :error-code :no-error,
+ :error-text ""}
+```
 
 
 
