@@ -1,4 +1,4 @@
-(ns evt.api
+(ns evrythng.api
   (:require [evt.res :as r]
             [evt.filters :as fltr])
   (:use [evt.net]
@@ -13,8 +13,8 @@
 (def EVT-API "https://api.evrythng.com")
 
 (defn with-account
-  "Returns an function 'evt' that interacts with the EVT account specified
-   by the given key (and optionally a different API URL). The evt function
+  "Returns an function 'evrythng' that interacts with the EVT account specified
+   by the given key (and optionally a different API URL). The evrythng function
    takes an action function (paginate or drain), a resource, and an optional filter.
    EVT returns a channel containing the results of running the action."
   ([key] (with-account key EVT-API))

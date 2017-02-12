@@ -1,8 +1,29 @@
 # EVT API
 
-Clojure client API to the [Evrythng](https://evrythng.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_Things) platform using [core.async](https://github.com/clojure/core.async).
+Clojure/ClojureScript async client API to the [Evrythng](https://evrythng.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_Things) platform using [core.async](https://github.com/clojure/core.async).
 
 An experiment to see if using channels results in more readable code than callbacks and promises.
+
+
+# REPL
+
+Get a page of Thngs:
+
+```
+(require '[clojure.core.async :as a :refer :all])
+
+(let [key (System/getenv "EVT_OPERATOR_KEY")]
+  (go
+    (let [e (a/chan)
+          c (evrythng.client/get key "https://api.evrythng.com/thngs?perPage=2" e)]
+        (clojure.pprint/pprint
+          (a/alts! [c e (a/timeout 1000)])))))
+```
+
+
+
+
+
 
 # Program Structure
 
@@ -20,12 +41,12 @@ The high-level structure of programs that use this library would be:
 Show the IDs of all the Thngs in the account. We can use paginate as we are not using filters (see gotchas)
 
 ```clojure
-(use 'evt.api)
-(require '[evt.print :as p])
+(use 'evrythng.api)
+(require '[evrythng.print :as p])
 
-(let [evt (with-default-account)] 
+(let [evrythng (with-default-account)]
   (-> 
-    (evt paginate :thngs)
+    (evrythng paginate :thngs)
     (for-each p/echo-id)))
 ```
 
@@ -36,14 +57,14 @@ The `paginate` function returns a channel, and the `for-each` function consumes 
 We cannot use pagination, as we are using a filter. 
 
 ```clojure
-(use 'evt.api)
-(require '[evt.print :as p])
-(require '[evt.filters :as f])
+(use 'evrythng.api)
+(require '[evrythng.print :as p])
+(require '[evrythng.filters :as f])
 
-(let [evt (with-default-account)
+(let [evrythng (with-default-account)
       fltr (f/tagged "Not Applicable"] 
   (-> 
-    (evt drain :products)
+    (evrythng drain :products)
     (for-each p/echo-tags)))
 ```
 
@@ -70,78 +91,78 @@ Use a filter to get all Products tagged _Glass_, then use a
 transducer to get only those with _GREEN_ in the description
 
 ```clojure
-(use 'evt.api)
-(use 'evt.res)
-(require '[evt.query :as q])
+(use 'evrythng.api)
+(use 'evrythng.res)
+(require '[evrythng.query :as q])
 
 (-> 
-   (evt.api/query 
-      evt.api/EVRYTHNG_API_KEY 
-      (evt.res/products-tagged "Glass")
+   (evrythng.api/query
+      evrythng.api/EVRYTHNG_API_KEY
+      (evrythng.res/products-tagged "Glass")
       (q/description-contains "GREEN"))
-   (evt.api/echo))
+   (evrythng.api/echo))
 ```
 
 ```clojure
-(use 'evt.api)
-(use 'evt.res)
-(require '[evt.filters :as f])
-(require '[evt.query :as q])
+(use 'evrythng.api)
+(use 'evrythng.res)
+(require '[evrythng.filters :as f])
+(require '[evrythng.query :as q])
 
 (-> 
-   (evt.api/query 
-      evt.api/EVRYTHNG_API_KEY 
-      evt.res/products-url
+   (evrythng.api/query
+      evrythng.api/EVRYTHNG_API_KEY
+      evrythng.res/products-url
       (f/tagged "Glass")
       (q/description-contains "GREEN"))
-   (evt.api/echo))
+   (evrythng.api/echo))
 ```
 
 ```clojure
-(use 'evt.api)
-(use 'evt.res)
-(require '[evt.filters :as f])
-(require '[evt.query :as q])
+(use 'evrythng.api)
+(use 'evrythng.res)
+(require '[evrythng.filters :as f])
+(require '[evrythng.query :as q])
 
 (-> 
-   (evt.api/query 
-      evt.api/EVRYTHNG_API_KEY 
-      evt.res/products-url
+   (evrythng.api/query
+      evrythng.api/EVRYTHNG_API_KEY
+      evrythng.res/products-url
       (f/in-project (f/tagged "Cork") "UDnkqspYQfdN6DhgXBkMhmkh")
       (q/description-contains ""))
-   (evt.api/echo))
+   (evrythng.api/echo))
 ```
 
 
 ```clojure
-(use 'evt.api)
-(use 'evt.res)
-(require '[evt.filters :as f])
-(require '[evt.query :as q])
-(require '[evt.net :as n])
+(use 'evrythng.api)
+(use 'evrythng.res)
+(require '[evrythng.filters :as f])
+(require '[evrythng.query :as q])
+(require '[evrythng.net :as n])
 
 
 (defn set-photo [photo-url thng]
   (let [id (:id thng)
-        url (evt.res/product id)
+        url (evrythng.res/product id)
         body {:photos [photo-url]}]
-        (n/put-json evt.api/EVRYTHNG_API_KEY url body)))
+        (n/put-json evrythng.api/EVRYTHNG_API_KEY url body)))
 
 (-> 
-   (evt.api/query 
-      evt.api/EVRYTHNG_API_KEY 
-      evt.res/products-url
+   (evrythng.api/query
+      evrythng.api/EVRYTHNG_API_KEY
+      evrythng.res/products-url
       (f/in-project (f/tagged "Cork") "UDnkqspYQfdN6DhgXBkMhmkh")
       (q/description-contains ""))
-   (evt.api/for-each (partial set-photo CORK)))
+   (evrythng.api/for-each (partial set-photo CORK)))
 ```
 
 
 ## Delete all tagged products
 
 ```clojure
-(-> (evt.api/paginate
-      evt.api/EVRYTHNG_API_KEY
-      (evt.res/products-tagged "_TMP"))
-    (evt.api/delete-all evt.res/product))
+(-> (evrythng.api/paginate
+      evrythng.api/EVRYTHNG_API_KEY
+      (evrythng.res/products-tagged "_TMP"))
+    (evrythng.api/delete-all evrythng.res/product))
 ```

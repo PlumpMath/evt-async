@@ -1,7 +1,7 @@
-(ns evt.res-test
+(ns evrythng.res-test
   (:import [java.net URL])
   (:require [clojure.test :refer :all]
-            [evt.res :refer :all]))
+            [evrythng.res :refer :all]))
 
 (deftest resource-url-test
   (let [EVT-API (URL. "https://api.evrythng.com")]

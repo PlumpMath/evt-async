@@ -1,5 +1,5 @@
-(ns evt.filters-test
-  (:require [evt.filters :as f])
+(ns evrythng.filters-test
+  (:require [evrythng.filters :as f])
   (:require [clojure.test :refer :all]))
 
 

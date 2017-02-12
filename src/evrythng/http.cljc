@@ -1,4 +1,4 @@
-(ns evt.http
+(ns evrythng.http
   ;#? (:clj
   (:require
             [clojure.tools.logging :as log]

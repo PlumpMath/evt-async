@@ -1,4 +1,4 @@
-(ns evt.filters)
+(ns evrythng.filters)
 
 ;
 ; Functions for building Filters for the EVT API

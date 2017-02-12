@@ -1,4 +1,4 @@
-(ns evt.net
+(ns evrythng.net
   (:require [clj-http.client :as h])
   (:use 
     [cheshire.core :only [generate-string]]))

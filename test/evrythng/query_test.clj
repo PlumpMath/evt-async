@@ -1,5 +1,5 @@
-(ns evt.query-test
-  (:use [evt.query :as q])
+(ns evrythng.query-test
+  (:use [evrythng.query :as q])
   (:require [clojure.test :refer :all]))
 
 ; TODO how to test?

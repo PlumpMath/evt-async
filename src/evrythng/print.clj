@@ -1,4 +1,4 @@
-(ns evt.print)
+(ns evrythng.print)
 
 (defn echo [thng]
   "Echo the id and name of the thng"

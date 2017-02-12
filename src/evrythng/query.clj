@@ -1,4 +1,4 @@
-(ns evt.query)
+(ns evrythng.query)
 
 ; Writes queries against EVT things using transducers
 

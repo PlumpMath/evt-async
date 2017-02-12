@@ -1,4 +1,4 @@
-(ns evt.worker
+(ns evrythng.worker
   (:use [clojure.core.async :only [go-loop <! timeout]]))
 
 ; Workers apply functions to all things in a channel

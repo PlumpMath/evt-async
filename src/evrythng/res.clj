@@ -1,4 +1,4 @@
-(ns evt.res
+(ns evrythng.res
   (:import [java.net URL])
   (:require [evt.filters :as f]))
 

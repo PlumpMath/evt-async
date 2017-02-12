@@ -1,6 +1,6 @@
-(ns evt.net-test
+(ns evrythng.net-test
   (:require [clojure.test :refer :all]
-            [evt.net :refer :all]))
+            [evrythng.net :refer :all]))
 
 (deftest auth-test
   (testing "Authorization header"

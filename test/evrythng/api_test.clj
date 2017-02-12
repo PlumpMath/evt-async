@@ -1,6 +1,6 @@
-(ns evt.api-test
+(ns evrythng.api-test
   (:require [clojure.test :refer :all]
-            [evt.api :refer :all]))
+            [evrythng.api :refer :all]))
 
 
 (deftest with-account-test

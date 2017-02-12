@@ -1,4 +1,4 @@
-(ns evt.worker-test
+(ns evrythng.worker-test
   (:use [evt.worker :as w])
   (:require [clojure.test :refer :all]))
 
