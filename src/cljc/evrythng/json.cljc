@@ -1,6 +1,9 @@
 (ns evrythng.json "JSON functions"
-  (:require [clojure.core.async :as a :refer [pipeline chan go-loop <!]]
-            #?(:clj [clojure.data.json :as json])))
+  (:require #?(:clj [clojure.core.async :as a :refer [onto-chan go-loop <!! <!]])
+            #?(:cljs [cljs.core.async :as a :refer [onto-chan <!! <!]])
+            #?(:clj [clojure.data.json :as json])
+            #?(:cljs [goog.json]))
+  #?(:cljs (:require-macros [cljs.core.async.macros :refer [go-loop]])))
 
 (defn decode-json [s]
   "Convert JSON string to a list of maps"
@@ -16,7 +19,7 @@
      (go-loop []
       (if-let [msg (<! in)]
         (let [msgs (decode-json msg)]
-          (a/<!! (a/onto-chan out msgs false))
+          (a/<!! (onto-chan out msgs false))
           (recur))
         (a/close! out)))
      out)))

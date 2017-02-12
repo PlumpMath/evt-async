@@ -21,5 +21,4 @@
                          (json-array-pipeline in out)
                          (a/close! in)
                          (let [results (a/<!! (a/into [] out))]
-                           (clojure.pprint/pprint results)
                            (is (= xi results))))))
