@@ -3,9 +3,10 @@
             #?(:clj [clojure.core.async
                      :as a
                      :refer [chan go >! close! dropping-buffer]])
-            #?(:cljs [cljs-http.client :as http])))
+            #?(:cljs [cljs-http.client :as http])
+            #?(:cljs [cljs.core.async :as a :refer [chan dropping-buffer] ])))
 
-(def request-headers {:accept      "application/json"
+(def request-headers {"Accept"     "application/json"
                       "User-Agent" "EvrythingAsync/0.1"})
 
 (defn req-headers [key]
@@ -20,25 +21,25 @@
   (assoc request-params :headers headers))
 
 (defn sink []
-  (chan (dropping-buffer 1)))
+  (a/chan (a/dropping-buffer 1)))
 
 #?(:clj
-  (defn get
+  (defn get-resource
     "GET the URL and place the response body string in a channel. Returns the chan and closes it.
      If the HTTP status is not 200, errors maps are put in the optional err chan."
-    ([auth url] (get auth url (sink)))
+    ([auth url] (get-resource auth url (sink)))
     ([auth url err]
      (let [out (a/chan)]
        (go
          (let [params (-> auth (req-headers) (req-params))
                response (http/get url params)]
            (case (:status response)
-             200 (a/>! out (:body response))
+             200 (a/>! out response)
              (a/>! err response))
            (a/close! out)))
        out))))
 
-#?(:cljs (defn get "" [auth url]
+#?(:cljs (defn get-resource "" [auth url]
          (let [params {:headers (req-headers auth)
                        :with-credentials? false}]
            (http/get url params))))

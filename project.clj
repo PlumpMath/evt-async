@@ -1,4 +1,4 @@
-(defproject evrythng.api "0.4.1"
+(defproject evrythng.api "0.4.2"
   :description "EVERYTHNG Client API using core.async"
   :url "https://github.com/devstopfix/evt-async"
   :license {:name "MIT License"
